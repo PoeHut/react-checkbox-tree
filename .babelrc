@@ -1,0 +1,12 @@
+{
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    "macros"
+    // [
+    //     "module-resolver",
+    //     {
+    //         "root": ["./resources/js"]
+    //     }
+    // ]
+  ]
+}
