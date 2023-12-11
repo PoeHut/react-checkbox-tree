@@ -4,8 +4,6 @@ const CheckboxTree = ({ data }) => {
   const [selectedKeys, setSelectedKeys] = useState([]);
   const keys = [];
 
-  console.log("Selected Key >>> ", selectedKeys);
-
   const handleToggleChange = (keys) => {
     const newSet = new Set(selectedKeys);
 
@@ -14,6 +12,41 @@ const CheckboxTree = ({ data }) => {
     });
 
     setSelectedKeys(Array.from(newSet));
+  };
+
+  const handleCheckboxChange = (node, key) => {
+    getParentKey(key);
+    findChild(node);
+    // const res = removeParentIfAllSiblingsUnchecked(findParent(node, key), key);
+    //console.log(res);
+  };
+
+  const getParentKey = (key) => {
+    !keys.includes(key) && keys.push(key);
+
+    for (const treeNode of data) {
+      const parent = findParent(treeNode, key);
+
+      if (parent) {
+        getParentKey(parent.key);
+        break;
+      }
+    }
+
+    handleToggleChange(keys);
+  };
+
+  const findParent = (node, childKey) => {
+    if (node.children) {
+      for (const child of node.children) {
+        if (child.key === childKey) return node;
+
+        const parent = findParent(child, childKey);
+
+        if (parent) return parent;
+      }
+    }
+    return null;
   };
 
   const findChild = (node) => {
@@ -31,46 +64,25 @@ const CheckboxTree = ({ data }) => {
     handleToggleChange(keys);
   };
 
-  const handleCheckboxChange = (node, key) => {
-    const getParentKey = (nodeKey) => {
-      //!keys.includes(nodeKey) && keys.push(nodeKey);
-      keys.push(nodeKey);
-      for (const treeNode of data) {
-        const parent = findParent(treeNode, nodeKey);
+  // Remove the parent key only if all its siblings are unchecked
+  // const isAllSiblingsUnchecked = (parentNode, key) => {
+  //   if (parentNode && parentNode.children) {
+  //     const siblings = parentNode.children.filter((child) => child.key !== key);
+  //     return siblings.every((sibling) => !keys.includes(sibling.key));
+  //   }
+  //   return true;
+  // };
 
-        if (parent) {
-          getParentKey(parent.key);
-          break;
-        }
-      }
-    };
+  // const removeParentIfAllSiblingsUnchecked = (parentNode, key) => {
 
-    getParentKey(key);
-    findChild(node);
-  };
-
-  const findParent = (node, childKey) => {
-    if (node.children) {
-      for (const child of node.children) {
-        if (child.key === childKey) {
-          //!keys.includes(node.key) && keys.push(node.key);
-          keys.push(node.key);
-          return node;
-        }
-
-        const parent = findParent(child, childKey);
-
-        if (parent) {
-          //!keys.includes(parent.key) && keys.push(parent.key);
-          keys.push(parent.key);
-          return parent;
-        }
-      }
-
-      handleToggleChange(keys);
-    }
-    return null;
-  };
+  //   if (parentNode && isAllSiblingsUnchecked(parentNode, key)) {
+  //     const index = keys.indexOf(parentNode.key);
+  //     if (index !== -1) {
+  //       keys.splice(index, 1);
+  //     }
+  //     removeParentIfAllSiblingsUnchecked(findParent(data, parentNode.key), key);
+  //   }
+  // };
 
   const renderTreeNode = (treeNode) => {
     return treeNode?.map((node) => (
